@@ -1,10 +1,10 @@
 from mininet.topo import Topo
 from mininet.net import Mininet
-from mininet.net import CLI
 from mininet.node import RemoteController
 from mininet.util import dumpNodeConnections
 from mininet.link import TCLink
 from mininet.log import setLogLevel
+
 
 class MyTopo(Topo):
     def __init__(self):
@@ -24,7 +24,7 @@ class MyTopo(Topo):
             self.addLink(core_sw_2, left_ag_sw, bw=1000, loss=2)
             self.addLink(core_sw_3, right_ag_sw, bw=1000, loss=2)
             self.addLink(core_sw_4, right_ag_sw, bw=1000, loss=2)
-            self.pod_generate(left_ag_sw, right_ag_sw, i-1) # pod_index: 0~3
+            self.pod_generate(left_ag_sw, right_ag_sw, i-1)  # pod_index: 0~3
 
     def pod_generate(self, left_ag_sw, right_ag_sw, pod_index):
         # edge switch
@@ -50,6 +50,7 @@ class MyTopo(Topo):
         self.addLink(right_edge_sw, h3, bw=100)
         self.addLink(right_edge_sw, h4, bw=100)
 
+
 def test():
     topo = MyTopo()
     net = Mininet(topo=topo,
@@ -59,23 +60,28 @@ def test():
                       controller=RemoteController,
                       ip='127.0.0.1')
     net.start()
+
     print "Dumping host Connections"
     dumpNodeConnections(net.hosts)
-    # print "Testing network connectivity"
-    # net.pingAll()
-    print "Testing bw between h01 and h31"
+    print "Testing network connectivity"
+    net.pingAll()
     h01, h02, h31 = net.get('h01', 'h02', 'h31')
+    print "Testing bw between h01 and h02"
     net.iperf((h01, h02))
+    print "Testing bw between h01 and h31"
     net.iperf((h01, h31))
-    # server
-    h02.cmdPrint("iperf -s -u -i 1")
-    h31.cmdPrint("iperf -s -u -i 1")
+
+    # server, run in another thread in backround
+    h02.popen("iperf -s -u -i 1")
+    h31.popen("iperf -s -u -i 1")
+
     # client
-    h01.cmdPrint("iperf -c "+ h02.IP() +"-u -t 10 -i 1 -b 100m")
-    h01.cmdPrint("iperf -c "+ h31.IP() +"-u -t 10 -i 1 -b 100m")
-
-
-    # CLI(net)
+    # `-u` generate udp traffic
+    # `-t 10 `for 10 seconds
+    # `-i 1` show info per second
+    # `-b 100m` 100 Mbps bandwidth
+    h01.cmdPrint("iperf -c " + h02.IP() + "-u -t 10 -i 1 -b 100m")
+    h01.cmdPrint("iperf -c " + h31.IP() + "-u -t 10 -i 1 -b 100m")
     net.stop()
 
 if __name__ == '__main__':
