@@ -46,3 +46,4 @@ if __name__ == '__main__':
 
 
 topos = {'mytopo': (lambda: MyTopo())}
+# sudo mn --custom mininet-script/binary_tree.py --topo mytopo --link=tc
