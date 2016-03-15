@@ -4,7 +4,7 @@ from mininet.node import RemoteController
 from mininet.util import dumpNodeConnections
 from mininet.link import TCLink
 from mininet.log import setLogLevel
-
+from mininet.cli import CLI
 
 class MyTopo(Topo):
     def __init__(self):
@@ -18,8 +18,8 @@ class MyTopo(Topo):
 
         # core switch
         for i in range(1, 5, 1):  # 1~4
-            left_ag_sw = self.addSwitch('s200' + str(2*i-1))
-            right_ag_sw = self.addSwitch('s200' + str(2*i))
+            left_ag_sw = self.addSwitch('s200%s' % (2*i-1))
+            right_ag_sw = self.addSwitch('s200%s' % (2*i))
             self.addLink(core_sw_1, left_ag_sw, bw=1000, loss=2)
             self.addLink(core_sw_2, left_ag_sw, bw=1000, loss=2)
             self.addLink(core_sw_3, right_ag_sw, bw=1000, loss=2)
@@ -28,17 +28,16 @@ class MyTopo(Topo):
 
     def pod_generate(self, left_ag_sw, right_ag_sw, pod_index):
         # edge switch
-        left_edge_sw = self.addSwitch('s300' + str(2*pod_index+1))
-        right_edge_sw = self.addSwitch('s300' + str(2*pod_index+2))
+        left_edge_sw = self.addSwitch('s300%s' % (2*pod_index+1))
+        right_edge_sw = self.addSwitch('s300%s' % (2*pod_index+2))
 
         # host
-        h1 = self.addHost('h' + str(pod_index) + '1')
-        h2 = self.addHost('h' + str(pod_index) + '2')
-        h3 = self.addHost('h' + str(pod_index) + '3')
-        h4 = self.addHost('h' + str(pod_index) + '4')
+        h1 = self.addHost('h%s1' % pod_index)
+        h2 = self.addHost('h%s2' % pod_index)
+        h3 = self.addHost('h%s3' % pod_index)
+        h4 = self.addHost('h%s4' % pod_index)
 
         # ag -> edge
-        self.addLink(left_ag_sw, left_edge_sw, bw=100)
         self.addLink(left_ag_sw, left_edge_sw, bw=100)
         self.addLink(left_ag_sw, right_edge_sw, bw=100)
         self.addLink(right_ag_sw, left_edge_sw, bw=100)
@@ -66,10 +65,6 @@ def test():
     print "Testing network connectivity"
     net.pingAll()
     h01, h02, h31 = net.get('h01', 'h02', 'h31')
-    print "Testing bw between h01 and h02"
-    net.iperf((h01, h02))
-    print "Testing bw between h01 and h31"
-    net.iperf((h01, h31))
 
     # server, run in another thread in backround
     h02.popen("iperf -s -u -i 1")
@@ -80,8 +75,11 @@ def test():
     # `-t 10 `for 10 seconds
     # `-i 1` show info per second
     # `-b 100m` 100 Mbps bandwidth
-    h01.cmdPrint("iperf -c " + h02.IP() + "-u -t 10 -i 1 -b 100m")
-    h01.cmdPrint("iperf -c " + h31.IP() + "-u -t 10 -i 1 -b 100m")
+    print "h01 connencting to h02"
+    h01.cmdPrint("iperf -c " + h02.IP() + " -u -t 10 -i 1 -b 100m")
+    print "h01 connencting to h31"
+    h01.cmdPrint("iperf -c " + h31.IP() + " -u -t 10 -i 1 -b 100m")
+    # CLI(net)
     net.stop()
 
 if __name__ == '__main__':
