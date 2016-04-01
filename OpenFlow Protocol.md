@@ -1,7 +1,20 @@
 # OpenFlow Switch Architecture
 
 ## Table of Content
-[TOC]
+- [OpenFlow Switch Overview](#openflow-switch-overview)
+- [OpenFlow Ports](#openflow-ports)
+  - [Physical Ports](#physical-ports)
+  - [Logical Ports](#logical-ports)
+  - [Reserved Ports](#reserved-ports)
+  - [Standard Ports](#standard-ports)
+- [OpenFlow Table](#openflow-table)
+  - [Pipeline Processing](#pipeline-processing)
+  - [Flow Table](#flow-table)
+  - [Group Table](#group-table)
+  - [Meter Table](#meter-table)
+  - [Counters](#counters)
+  - [Instructions](#instructions)
+  - [Actions](#actions)
 
 
 ## OpenFlow Switch Overview
@@ -10,17 +23,23 @@
 
 * OpenFlow Channel
 
+
+
 ## OpenFlow Ports
 
 ### Physical Ports
 
 Physical ports 是指 switch 上實體的 port，在 legacy switch中通常就是physical port 和 ethernet 介面一對一對應，在 port在某些應用中，可以把一台OpenFlow switch 虛擬切成多台或多個VLAN
 
+
+
 ### Logical Ports
 
 一種邏輯抽象的port，這邊也特別指跟 OpenFlow Protocol無關的，譬如：link aggregation、tunnel 和 loop back ，而OpenFlow  protocol 定義的抽象 port 會歸類在 Reserved Port。
 
  logical port 比起 physical port ，可能會多帶一些訊息，譬如說 Tunnel ID，所以需要多一層 interface來做封包 encapsulation，一個logical port 也可能對應到多個 physical port。
+
+
 
 ### Reserved Ports
 
@@ -79,9 +98,13 @@ Wildcard/Don't care.
 
 用 legacy (non-OpenFlow) 的 pipeline 做 flooding，會送往所有的 [Standard Port](### Standard Ports)，除了 Ingress Port 還有設定了 [`OFPPS_BLOCKED` ](#port-state)的 port。
 
+
+
 ### Standard Ports
 
 標準的 port 包含 physical port , logical port 和 LOCAL if support
+
+
 
 ### Port Structure
 
@@ -111,6 +134,8 @@ struct ofp_port {
 OFP_ASSERT(sizeof(struct ofp_port) == 64);	/* Align to 64 bits. */
 ```
 
+
+
 #### Port Config
 
 `OFPPC_*` flags
@@ -128,6 +153,8 @@ enum ofp_port_config {
 };
 ```
 
+
+
 #### Port State
 
 `OFPPS_*` flags
@@ -142,6 +169,8 @@ enum ofp_port_state {
     OFPPS_LIVE = 1 << 2;		/* Live for Fast Failover Group. */
 };
 ```
+
+
 
 #### Port Feature
 
@@ -161,15 +190,13 @@ OFPPF_40GB_FD = 1 << 7, 	/* 40 Gb full-duplex rate support. */
 OFPPF_100GB_FD = 1 << 8, 	/* 100 Gb full-duplex rate support. */
 OFPPF_1TB_FD  = 1 << 9, 	/* 1 Tb full-duplex rate support. */
 OFPPF_OTHER = 1 << 10, 		/* Other rate, not in the list. */
-  
+
 OFPPF_COPPER = 1 << 11, 	/* Copper medium. */
 OFPPF_FIBER = 1 << 12, 		/* Fiber medium. */
 OFPPF_AUTONEG = 1 << 13, 	/* Auto-negotiation. */
 OFPPF_PAUSE = 1 << 14, 		/* Pause. */
 OFPPF_PAUSE_ASYM = 1 << 15  /* Asymmetric pause. */
 ```
-
-
 
 
 
