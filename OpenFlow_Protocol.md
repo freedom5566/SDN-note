@@ -314,13 +314,15 @@ Group Type 有四種：All、Select、Indirect 和 Failover
 
 
 
-##### Failover (Optional)
+##### Fast Failover (Optional)
 
 > Each action bucket is associated with a specificport and/or group that controls its liveness. The buckets are evaluated in the order defined by thegroup, and the first bucket which is associated with a live port/group is selected. This group typeenables the switch to change forwarding without requiring a round trip to the controller. If no bucketsare live, packets are dropped.
 
 
 
 Group 也可以拿來處理 Failover，如果每個action bucket都跟一個port有關，當switch知道選擇的 action bucket 連到的 port 不能使用的時候，他會直接往下一個 action bucket 來執行，以這個例子來說，假設選到往 port1 的 action bucket，發現 port 1 不能用，所以他會直接往下個看，也就是直接往port 2 送，這樣可以直接透過 switch 來處理，避免失敗了還要上去問 controller 花費 round trip 的時間
+
+如果所有 Action Bucket 都失敗的話，則封包會被 drop 掉
 
 ![alt text](note_img/action_buckets_failover.png)
 
@@ -333,6 +335,17 @@ Group 也可以拿來處理 Failover，如果每個action bucket都跟一個port
 ![alt text](note_img/action_buckets_indirect.png)
 
 以上面的例子來說，Flow 1,3,4都是屬於Group1，也就是要 forward 到 port 2，如果port 2 壞掉，要一個一個改 Instruction 很麻煩，所以我們會將它們設成同一個 Group，然後直接去改 Group 的 Action 就好，這樣比較方便
+
+
+
+##### Group Table 整理
+
+|  Group Type   |   spec   | Action Bucket 數量 |               功能               |
+| :-----------: | :------: | :--------------: | :----------------------------: |
+|      All      | require  |        多         |       Broadcast/Flooding       |
+|    Select     | optional |        多         |         Load Balancing         |
+| Fast Failover | optional |        多         | failover handling/ reliability |
+|   Indirect    | require  |        一個        |   more efficient convergence   |
 
 
 
