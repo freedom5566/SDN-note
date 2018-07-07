@@ -66,7 +66,7 @@ Wildcard/Don't care.
 
 #### Flood (Optional)
 
-用 legacy (non-OpenFlow) 的 pipeline 做 flooding，會送往所有的 [`Standard Port`](#Standard Ports)，除了 Ingress Port 還有設定了 [`OFPPS_BLOCKED` ](#port-state)的 port。
+用 legacy (non-OpenFlow) 的 pipeline 做 flooding，會送往所有的 [Standard Port](#standard-ports)，除了 Ingress Port 還有設定了 [`OFPPS_BLOCKED` ](#port-state)的 port。
 
 #### 整理
 
