@@ -44,7 +44,7 @@ Input Port：來自controller
 
 讓封包再回去 pipeline 處理一次。
 
-####In_Port (Require)
+#### In_Port (Require)
 
 表示封包進來的那個 port，可以當作是 output port 將封包送回去。
 
@@ -66,7 +66,7 @@ Wildcard/Don't care.
 
 #### Flood (Optional)
 
-用 legacy (non-OpenFlow) 的 pipeline 做 flooding，會送往所有的 [Standard Port](### Standard Ports)，除了 Ingress Port 還有設定了 [`OFPPS_BLOCKED` ](#port-state)的 port。
+用 legacy (non-OpenFlow) 的 pipeline 做 flooding，會送往所有的 [Standard Port](#standard-ports)，除了 Ingress Port 還有設定了 [`OFPPS_BLOCKED` ](#port-state)的 port。
 
 #### 整理
 
@@ -217,7 +217,7 @@ ps. meta data 是用在 table 之間溝通的，前一個 table 可以利用 upd
 
 
 
-###Flow Table
+### Flow Table
 
 其實Flow Table 通常會有三份，一份就是大部分我們在說在 Switch 晶片上的 table，另一份是實作的時候通常 controller 也會記著說現在有哪些 flow entry ，最後一份是 switch OS 上，switch OS 上有一 driver 區用來控制晶片，他裡面其實也存了一個 軟體的 flow table。
 
